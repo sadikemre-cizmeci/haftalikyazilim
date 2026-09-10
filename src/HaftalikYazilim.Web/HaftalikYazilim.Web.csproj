@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!--
+    Tek proje = hem Web API (backend) hem de statik site (frontend / wwwroot).
+    Aynı adresten sunulurlar; bu yüzden CORS, ayrı deploy vb. dertlerimiz yok.
+
+    Ortak ayarlar (Nullable, ImplicitUsings, LangVersion) çözüm kökündeki
+    Directory.Build.props dosyasından geliyor.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>HaftalikYazilim.Web</RootNamespace>
+    <AssemblyName>HaftalikYazilim.Web</AssemblyName>
+    <!-- Statik dosya sunumu için gerekli değil ama açık bırakmak zararsız. -->
+    <UserSecretsId>haftalikyazilim-web</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Geliştirme sırasında API'yi denemek için OpenAPI belgesi üretir: /openapi/v1.json -->
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+
+    <!-- EF Core veritabanı sağlayıcısı: PostgreSQL (Npgsql). -->
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+
+    <!-- 'dotnet ef migrations ...' komutlarının çalışması için (yalnızca tasarım zamanı). -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+
+    <!--
+      Link önizleme kartı (og:image) üretimi. SkiaSharp = MIT lisanslı, çapraz platform
+      2B çizim. SADECE metin + basit şekil çiziyoruz (PDF render YOK).
+      Linux sunucuda çalışması için NativeAssets.Linux.NoDependencies de eklendi
+      (libSkiaSharp'ı kendi taşır, sistem kütüphanesi gerektirmez).
+    -->
+    <PackageReference Include="SkiaSharp" Version="2.88.9" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
+
+    <!--
+      NOT 1: Profil fotoğrafı SUNUCUDA işlenmez. Tarayıcı <canvas> ile 512px'e
+      küçültüp JPEG'e çevirip gönderir (bkz. wwwroot/assets/js/pages/profil-duzenle.js).
+      Sunucuda görsel kütüphanesi (ve lisans/güvenlik yükü) YOK; sunucu sadece
+      küçük boyut sınırı + dosya imzası kontrolü yapıp diske yazar.
+
+      NOT 2: Şifre hash'leme için kullandığımız PasswordHasher<T> / IPasswordHasher<T>
+      ASP.NET Core paylaşılan çerçevesiyle (Microsoft.AspNetCore.App) HAZIR gelir.
+    -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      App_Data: yüklenen PDF'ler ve profil fotoğrafları burada durur.
+      Bu klasörü derlemeye / 'dotnet watch' izlemesine dahil ETME ki yükleme
+      yapınca uygulama boşuna yeniden başlamasın.
+    -->
+    <Content Remove="App_Data\**" />
+    <Compile Remove="App_Data\**" />
+    <None Remove="App_Data\**" />
+    <Watch Remove="App_Data\**" />
+  </ItemGroup>
+
+</Project>

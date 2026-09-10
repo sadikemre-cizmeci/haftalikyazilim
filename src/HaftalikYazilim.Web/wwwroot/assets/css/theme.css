@@ -1,0 +1,142 @@
+/* ==========================================================================
+   TEMA / TASARIM DEĞİŞKENLERİ  (design tokens)
+   ==========================================================================
+   Sitenin TÜM renkleri, yazı tipleri, boşlukları, gölgeleri ve hareket (animasyon)
+   ayarları burada TEK yerde. site.css bunları kullanır; orada sabit değer yazmayız.
+
+   → Bir şeyi değiştirmek istediğinde önce BURAYA bak.
+
+   TASARIM YÖNÜ (neden böyle):
+   Amaç sakin, göze dinlendirici ama okumaya/yazmaya teşvik eden bir arayüz.
+   Araştırmaya dayanan seçimler:
+     • Zemin bembeyaz değil, sıcak "kâğıt" tonu → parıltı azalır, göz yorulmaz,
+       okuma süresi uzar, "eski bir kitap / sakin bir kafe" hissi verir.
+     • Metin saf siyah değil, sıcak "mürekkep" tonu → daha yumuşak, editoryal.
+     • Tek güçlü vurgu rengi: koyu çam yeşili. Yeşil = denge, odak, "ilerleme".
+       Sakin ama harekete geçirir. (Mavi teknoloji bloglarından da ayrışır.)
+     • İkincil mikro-vurgu: kiremit/kil rengi. Sadece küçük yerlerde (yeni rozeti,
+       bağlantı altı çizgisi, ⓘ) sıcaklık katmak için.
+     • Düşük doygunluk her yerde; sadece vurgu renkleri canlı. Sakin paletler
+       göz hareketini yavaşlatır, okuma seansını uzatır, güven hissi verir.
+     • Başlıklar SERIF (kitap/dergi hissi) → "okumaya değer" algısı, tıklama isteği.
+   ========================================================================== */
+
+:root {
+  /* ---- Marka / vurgu ---- */
+  --brand: #1f6f5c;            /* ana vurgu: koyu çam yeşili (butonlar, linkler, aktif menü) */
+  --brand-dark: #185848;       /* hover / basılı hâl */
+  --brand-weak: #e8f1ec;       /* çok açık yeşil zemin (rozet, aktif menü arka planı) */
+  --on-brand: #ffffff;         /* yeşil zemin üstündeki yazı */
+
+  --accent-2: #c1653f;         /* ikincil mikro-vurgu: kiremit/kil. SADECE küçük yerlerde. */
+  --accent-2-weak: #f6e7de;
+
+  /* ---- Metin (sıcak mürekkep tonları) ---- */
+  --text: #2b2724;             /* ana metin */
+  --text-soft: #6b6259;        /* ikincil (tarih, özet, yazar) */
+  --text-faint: #9a9086;       /* en silik (ipuçları) */
+
+  /* ---- Yüzeyler (sıcak kâğıt tonları) ---- */
+  --bg: #faf7f0;               /* sayfa zemini — sıcak fildişi */
+  --bg-soft: #f3eee2;          /* hafif bölüm zemini */
+  --bg-inset: #efe9db;         /* input zemini */
+  --surface: #fffdf8;          /* kartların zemini (zeminden bir tık temiz) */
+  --border: #e6ded0;           /* ince çizgiler, kart kenarı */
+  --border-strong: #d8cdb9;    /* hover'da kenar */
+
+  /* ---- Durum renkleri ---- */
+  --danger: #b1442f;
+  --danger-dark: #933725;
+  --success: #1f6f5c;          /* "yayında" — marka yeşiliyle aynı, tutarlı */
+  --warning: #a9701f;          /* "taslak" */
+
+  /* ---- Tipografi ---- */
+  /* Başlıklar: sistem serif yığını (ekstra font indirmeden dergi hissi).
+     Webfont istersen: buraya '"Söhne", ...' gibi ekle + index'te <link> ver. */
+  --font-serif: "Iowan Old Style", "Palatino Linotype", "Palatino", "Book Antiqua",
+                "Georgia", "Times New Roman", serif;
+  /* Gövde + arayüz: humanist sans */
+  --font-sans: system-ui, -apple-system, "Segoe UI", "Inter", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --fs-sm: 0.875rem;           /* 14px — meta, ipucu */
+  --fs-base: 1.0625rem;        /* 17px — gövde (16px tabanın biraz üstü, konfor için) */
+  --fs-lg: 1.1875rem;          /* 19px */
+  --fs-xl: 1.5rem;             /* 24px */
+  --fs-2xl: 2.125rem;          /* 34px */
+  --fs-3xl: 2.75rem;           /* 44px — anasayfa başlığı */
+  --lh: 1.7;                   /* gövde satır yüksekliği (uzun metin için ≥1.5 önerilir) */
+  --lh-tight: 1.25;            /* başlıklar */
+  --measure: 66ch;             /* ideal satır uzunluğu ~50–75 karakter; 66 en iyisi */
+
+  /* ---- Boşluk ölçeği ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  /* ---- Biçim ---- */
+  --radius: 14px;              /* kartlar — biraz daha yuvarlak = daha davetkâr */
+  --radius-sm: 8px;
+  --radius-pill: 999px;
+
+  /* ---- Yükseklik / gölge (sıcak tonlu, katmanlı) ---- */
+  --e1: 0 1px 2px rgba(43, 39, 36, 0.06), 0 1px 3px rgba(43, 39, 36, 0.05);
+  --e2: 0 2px 6px rgba(43, 39, 36, 0.06), 0 10px 24px rgba(43, 39, 36, 0.07);
+  --e3: 0 6px 16px rgba(43, 39, 36, 0.09), 0 22px 48px rgba(43, 39, 36, 0.11);
+  /* eski isimler (geriye dönük uyum) */
+  --shadow-sm: var(--e1);
+  --shadow: var(--e2);
+  --shadow-lift: var(--e3);
+
+  /* ---- Hareket (animasyon) ---- */
+  /* Mikro etkileşimler kısa ve sakin: 160–220ms, "ease-out". */
+  --dur: 180ms;
+  --dur-slow: 280ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);   /* giriş / kullanıcı tepkisi için ideal eğri */
+
+  /* ---- Yerleşim ---- */
+  --content-width: 900px;
+  --header-height: 62px;
+}
+
+/* --------------------------------------------------------------------------
+   KARANLIK TEMA (isteğe bağlı) — sıcak koyu, mavi-siyah değil.
+   Zemin doygunluğu ve parlaklığı düşük tutuldu → hangi ton olursa olsun "sakin".
+   İstemiyorsan bu bloğu tümüyle silebilirsin.
+   -------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand: #4fb89e;
+    --brand-dark: #3fa78e;
+    --brand-weak: #16261f;
+    --on-brand: #10201b;
+
+    --accent-2: #e08a5f;
+    --accent-2-weak: #2c1f18;
+
+    --text: #ece7db;
+    --text-soft: #b4aa9b;
+    --text-faint: #877d6f;
+
+    --bg: #17150f;
+    --bg-soft: #1e1b14;
+    --bg-inset: #242017;
+    --surface: #201d15;
+    --border: #322d22;
+    --border-strong: #453e30;
+
+    --danger: #e07a5f;
+    --danger-dark: #e58f77;
+    --warning: #d8a24a;
+
+    --e1: 0 1px 2px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.4);
+    --e2: 0 2px 6px rgba(0, 0, 0, 0.5), 0 10px 24px rgba(0, 0, 0, 0.45);
+    --e3: 0 6px 16px rgba(0, 0, 0, 0.55), 0 22px 48px rgba(0, 0, 0, 0.55);
+  }
+}

@@ -1,0 +1,74 @@
+### HaftalıkYazılım — API deneme dosyası
+# VS Code'da "REST Client" eklentisi veya Rider/Visual Studio ile bu dosyadaki
+# istekleri tek tıkla çalıştırabilirsin. Uygulamayı önce "dotnet run" ile başlat.
+#
+# NOT: Aşağıdaki uçlardan bazıları veritabanı KURULDUKTAN sonra çalışır
+# (bkz. README → "Veritabanını kurmak").
+
+@host = http://localhost:5099
+
+### Sağlık / OpenAPI belgesi (geliştirme)
+GET {{host}}/openapi/v1.json
+
+### Anasayfa iletişim bilgisi
+GET {{host}}/api/site/info
+
+### Giriş (admin tohumlandıysa)
+# Başarılıysa yanıt başlıklarında Set-Cookie: hy_auth=... görürsün; REST Client
+# bunu sonraki isteklerde otomatik gönderir.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@haftalikyazilim.local",
+  "password": "DegistirBeniAdmin!2026"
+}
+
+### Ben kimim?
+GET {{host}}/api/auth/me
+
+### Yayınlanmış yazılar (herkese açık)
+GET {{host}}/api/articles?page=1&pageSize=10
+
+### Yazar filtresiyle
+GET {{host}}/api/articles?authorId=1&search=cache&page=1&pageSize=10
+
+### Yazar listesi (filtre menüsü için)
+GET {{host}}/api/authors
+
+### Kendi yazılarım (giriş gerekli)
+GET {{host}}/api/articles/mine
+
+### Tek yazı
+GET {{host}}/api/articles/1
+
+### Admin: tüm yazılar
+GET {{host}}/api/admin/articles?includeDeleted=true
+
+### Admin: kullanıcılar
+GET {{host}}/api/admin/users
+
+### Çıkış
+POST {{host}}/api/auth/logout
+
+# --- Yeni yazı oluşturma (PDF yükleme) ---
+# multipart/form-data gövdesini elle yazmak zahmetli; bunu frontend'deki
+# "Yeni yazı" formundan denemek daha kolay. Yine de örnek:
+#
+# POST {{host}}/api/articles
+# Content-Type: multipart/form-data; boundary=----sinir
+#
+# ------sinir
+# Content-Disposition: form-data; name="Title"
+#
+# Haftalık Yazılım #1
+# ------sinir
+# Content-Disposition: form-data; name="Summary"
+#
+# İlk yazının kısa özeti buraya.
+# ------sinir
+# Content-Disposition: form-data; name="Pdf"; filename="yazi.pdf"
+# Content-Type: application/pdf
+#
+# < ./ornek.pdf
+# ------sinir--

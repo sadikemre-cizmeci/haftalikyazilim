@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-i18n="title.read">Yazı — HaftalıkYazılım</title>
+  <!-- Sosyal medya kartı (Open Graph): sunucu /oku.html?id=N isteğinde burayı doldurur.
+       Bkz. Infrastructure/LinkPreviewMiddleware.cs. Doğrudan dosya açılırsa bu satır görünmez. -->
+  <!--OG-->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+  <link rel="stylesheet" href="assets/css/theme.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body>
+  <header id="site-header" class="site-header"></header>
+
+  <!-- Okuma ilerleme çubuğu: menünün hemen altında ince bir şerit (oku.js doldurur). -->
+  <div id="read-progress" class="readbar"><span></span></div>
+
+  <!-- Yazının kendisi PDF içinde başlık taşıdığı için burada AYRI bir başlık şeridi YOK.
+       Yazar künyesi + beğen/kaydet/paylaş, PDF araç çubuğuna eklenir (assets/js/pages/oku.js). -->
+  <div id="pdf"></div>
+
+  <!-- Yorumlar (PDF'in altında; sayfayı aşağı kaydırınca gelir) -->
+  <section id="yorumlar" class="comments">
+    <h2 class="comments__title" data-i18n="oku.commentsHeading">Yorumlar</h2>
+    <div id="comment-form-slot"></div>
+    <div id="comment-list" class="comment-list"></div>
+  </section>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <script type="module" src="assets/js/pages/oku.js"></script>
+</body>
+</html>

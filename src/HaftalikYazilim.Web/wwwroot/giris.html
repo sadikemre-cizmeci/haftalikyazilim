@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-i18n="title.login">Giriş — HaftalıkYazılım</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+  <link rel="stylesheet" href="assets/css/theme.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body>
+  <header id="site-header" class="site-header"></header>
+
+  <main class="page">
+    <!-- Giriş kartı ortada, dar. -->
+    <div class="card" style="max-width: 400px; margin: var(--space-6) auto 0;">
+      <h1 style="font-size: var(--fs-xl);" data-i18n="giris.h1">Giriş</h1>
+      <p class="muted text-sm" data-i18n="giris.lead">
+        Okumak için giriş gerekmez. Yazmak, takip etmek, beğenmek ve yorum yapmak için hesap gerekir.
+      </p>
+
+      <div id="login-error" class="alert alert--error" hidden></div>
+
+      <form id="login-form" class="stack" novalidate>
+        <div class="field">
+          <label class="field__label" for="login-id" data-i18n="giris.idLabel">Kullanıcı adı veya e-posta</label>
+          <input id="login-id" class="input" type="text" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <div class="row row--between" style="align-items: baseline;">
+            <label class="field__label" for="login-password" data-i18n="giris.pwLabel">Şifre</label>
+            <a class="text-sm" href="sifre-sifirla.html" data-i18n="giris.forgot">Şifremi unuttum</a>
+          </div>
+          <input id="login-password" class="input" type="password" autocomplete="current-password" required />
+        </div>
+        <button id="login-submit" class="btn btn--primary" type="submit" data-i18n="giris.submit">Giriş yap</button>
+      </form>
+
+      <p class="muted text-sm mb-0" style="margin-top: var(--space-4);">
+        <span data-i18n="giris.noAccount">Hesabın yok mu?</span> <a href="kayit.html" data-i18n="giris.registerLink">Kayıt ol</a>
+      </p>
+    </div>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <script type="module" src="assets/js/pages/giris.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Logo önizleme — HaftalıkYazılım</title>
+  <link rel="stylesheet" href="assets/css/theme.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+  <style>
+    /* Bu sayfa SADECE tasarım denemesi içindir; logo kesinleşince silinebilir. */
+    .wrap { max-width: 1100px; margin: 0 auto; padding: var(--space-5) var(--space-4); }
+    .cols { display: grid; grid-template-columns: 380px 1fr; gap: var(--space-5); align-items: start; }
+    .tile { background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+            padding: var(--space-4); display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
+    .tile.dark { background: #17150f; border-color: #322d22; color: #ece7db; }
+    .tile.paper { background: #f3eee2; }
+    .cap { font-size: 12px; color: var(--text-faint); }
+    .tile.dark .cap { color: #877d6f; }
+    .sizes { display: flex; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap; justify-content: center; }
+    .lockup { display: inline-flex; align-items: center; gap: 10px; }
+    .word { font-family: var(--font-serif); font-weight: 600; letter-spacing: -0.01em; }
+    .stack2 { display: flex; flex-direction: column; gap: var(--space-4); }
+    h2 { font-size: 15px; margin: 0 0 var(--space-2); color: var(--text-soft); }
+  </style>
+</head>
+<body>
+  <div class="wrap stack2">
+    <div>
+      <h1 style="margin:0">Logo — fırça darbesi</h1>
+      <p class="cap" style="font-size:14px">Açık daire · başta boya topağı · soldan içeri kıvrılan kuyrukta fırça kalkışı + canlı renkler</p>
+    </div>
+
+    <div class="cols">
+      <!-- Büyük -->
+      <div class="tile"><img src="assets/img/logo.svg" width="340" height="340" alt="" /><span class="cap">340 px</span></div>
+
+      <div class="stack2">
+        <!-- Küçük boyutlar -->
+        <div>
+          <h2>Küçülünce okunuyor mu?</h2>
+          <div class="tile sizes">
+            <div style="text-align:center"><img src="assets/img/logo.svg" width="96" height="96" alt="" /><div class="cap">96</div></div>
+            <div style="text-align:center"><img src="assets/img/logo.svg" width="48" height="48" alt="" /><div class="cap">48</div></div>
+            <div style="text-align:center"><img src="assets/img/logo.svg" width="32" height="32" alt="" /><div class="cap">32</div></div>
+            <div style="text-align:center"><img src="assets/img/logo.svg" width="24" height="24" alt="" /><div class="cap">24</div></div>
+            <div style="text-align:center"><img src="assets/img/logo.svg" width="16" height="16" alt="" /><div class="cap">16</div></div>
+          </div>
+        </div>
+
+        <!-- Navbar kilidi -->
+        <div>
+          <h2>Yazıyla birlikte (navbar)</h2>
+          <div class="tile paper" style="align-items:flex-start; gap:var(--space-3)">
+            <div class="lockup"><img src="assets/img/logo.svg" width="26" height="26" alt="" /><span class="word" style="font-size:19px">HaftalıkYazılım</span></div>
+            <div class="lockup"><img src="assets/img/logo.svg" width="32" height="32" alt="" /><span class="word" style="font-size:23px">HaftalıkYazılım</span></div>
+            <div class="lockup"><img src="assets/img/logo.svg" width="40" height="40" alt="" /><span class="word" style="font-size:28px">HaftalıkYazılım</span></div>
+          </div>
+        </div>
+
+        <!-- Zeminler -->
+        <div>
+          <h2>Zeminler</h2>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:var(--space-3)">
+            <div class="tile paper"><img src="assets/img/logo.svg" width="72" height="72" alt="" /><span class="cap">kâğıt</span></div>
+            <div class="tile dark"><img src="assets/img/logo.svg" width="72" height="72" alt="" /><span class="cap">koyu</span></div>
+            <div class="tile"><img src="assets/img/logo.svg" width="72" height="72" alt="" /><span class="cap">beyaz</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

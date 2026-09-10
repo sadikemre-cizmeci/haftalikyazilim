@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-i18n="title.home">HaftalıkYazılım — Anasayfa</title>
+  <meta name="description" content="Yazılımla ilgili teknik yazıların paylaşıldığı açık bir arşiv." />
+  <!-- Sosyal medya kartı (Open Graph): sunucu bu isteği yakalayıp burayı doldurur.
+       Bkz. Infrastructure/LinkPreviewMiddleware.cs -->
+  <!--OG-->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+  <link rel="stylesheet" href="assets/css/theme.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body>
+  <header id="site-header" class="site-header"></header>
+
+  <main class="page">
+
+    <section class="hero">
+      <h1 data-i18n="home.h1">Oku, yaz, takip et.</h1>
+      <p class="hero__lead" data-i18n="home.lead">
+        Yazılımla ilgili teknik yazıların paylaşıldığı açık bir arşiv. Herkes hesap
+        açıp kendi yazısını PDF olarak yayımlayabilir; yazıları okuyabilir,
+        beğenebilir, yorumlayabilir, kaydedebilir ve yazarları takip edebilirsin.
+      </p>
+      <p class="row">
+        <a class="btn btn--primary" href="yazilar.html" data-i18n="home.browse">Yazılara göz at</a>
+        <a id="signup-btn" class="btn" href="kayit.html" data-i18n="home.signup" hidden>Hesap aç</a>
+      </p>
+    </section>
+
+    <!-- İletişim (küçük, tek satır) — appsettings.json → "Site" boşsa gizli -->
+    <p id="contact-line" class="contact-mini muted" hidden>
+      <span data-i18n="home.contactPrefix">Öneri veya geri bildirim için:</span>
+      <a id="contact-email" href="#">—</a>
+      <span id="contact-phone-wrap" hidden> · <a id="contact-phone" href="#">—</a></span>
+    </p>
+
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <script type="module" src="assets/js/pages/home.js"></script>
+</body>
+</html>

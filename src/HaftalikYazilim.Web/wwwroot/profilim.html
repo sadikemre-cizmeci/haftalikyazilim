@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-i18n="title.myArticles">Yazılarım — HaftalıkYazılım</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+  <link rel="stylesheet" href="assets/css/theme.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body>
+  <header id="site-header" class="site-header"></header>
+
+  <main class="page stack">
+
+    <div class="row row--between">
+      <div>
+        <h1 class="mb-0" data-i18n="profilim.h1">Yazılarım</h1>
+        <p class="muted mb-0 text-sm" data-i18n="profilim.sub">Taslak ve yayında olan tüm yazıların.</p>
+      </div>
+      <a class="btn btn--primary" href="yazi-duzenle.html" data-i18n="profilim.new">Yeni yazı</a>
+    </div>
+
+    <!-- Yayında / Taslak süzgeci — yazı varken JS gösterir -->
+    <div id="status-tabs" class="segmented" hidden>
+      <button type="button" data-status="all" class="is-active" data-i18n="profilim.tabAll">Tümü</button>
+      <button type="button" data-status="Published" data-i18n="profilim.tabPublished">Yayında</button>
+      <button type="button" data-status="Draft" data-i18n="profilim.tabDraft">Taslak</button>
+    </div>
+
+    <p id="my-list-status" class="state" data-i18n="common.loading">Yükleniyor…</p>
+    <ul id="my-article-list" class="article-list"></ul>
+
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <!-- Sağ altta sabit "+" düğmesi. requireAuth geçince JS görünür yapar. -->
+  <a id="new-article-fab" class="fab" href="yazi-duzenle.html" title="Yeni yazı" aria-label="Yeni yazı"
+     data-i18n-attr="title:profilim.new|aria-label:profilim.new" hidden>
+    <span aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </span>
+  </a>
+
+  <script type="module" src="assets/js/pages/profilim.js"></script>
+</body>
+</html>

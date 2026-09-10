@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-i18n="title.editArticle">Yazı düzenle — HaftalıkYazılım</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+  <link rel="stylesheet" href="assets/css/theme.css" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body>
+  <header id="site-header" class="site-header"></header>
+
+  <main class="page">
+    <div class="card stack" style="max-width: 640px; margin: 0 auto;">
+
+      <a class="backlink" href="profilim.html" data-i18n="yaziDuzenle.backToMine">← Yazılarım</a>
+      <h1 id="form-title" class="mb-0" style="font-size: var(--fs-xl);">Yeni yazı</h1>
+
+      <form id="article-form" class="stack" novalidate>
+        <div class="field">
+          <label class="field__label" for="article-title" data-i18n="yaziDuzenle.titleLabel">Başlık</label>
+          <input id="article-title" class="input" type="text" maxlength="200" />
+          <span id="title-warn" class="field__hint field__hint--warn" hidden></span>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="article-summary" data-i18n="yaziDuzenle.summaryLabel">Özet</label>
+          <textarea id="article-summary" class="textarea"
+            placeholder="Yazının 1-2 cümlelik özeti. ⓘ baloncuğunda görünür. Boş bırakabilirsin."
+            data-i18n-attr="placeholder:yaziDuzenle.summaryPh"></textarea>
+          <span id="summary-warn" class="field__hint field__hint--warn" hidden></span>
+        </div>
+
+        <div class="field">
+          <span class="field__label" data-i18n="yaziDuzenle.pdfLabel">PDF dosyası</span>
+          <!-- JS doldurur: "PDF seç" düğmesi VEYA seçilen/mevcut dosyanın kartı -->
+          <div id="pdf-slot"></div>
+          <span id="pdf-warn" class="field__hint field__hint--warn" hidden></span>
+          <!-- Gerçek dosya girişi gizli; #pdf-slot içindeki düğme tetikler -->
+          <input id="article-pdf" type="file" accept="application/pdf" hidden />
+        </div>
+
+        <!-- Gönderim sırasında görünür: yükleme ilerlemesi -->
+        <div id="upload-progress" class="upload-progress" hidden>
+          <div class="upload-progress__track"><span></span></div>
+          <span class="upload-progress__label"></span>
+        </div>
+
+        <!-- Genel hata (ağ / sunucu) — kutu değil, sade metin -->
+        <p id="article-error" class="form-error" hidden></p>
+
+        <!-- Düğmeler VEYA (yayınlandıktan sonra) başarı paneli -->
+        <div id="form-actions" class="stack" style="gap: var(--space-2);">
+          <button type="submit" name="act" value="draft" class="btn btn--block"
+            data-i18n="yaziDuzenle.saveDraft">Taslak olarak kaydet</button>
+          <button type="submit" name="act" value="publish" class="btn btn--primary btn--block"
+            data-i18n="yaziDuzenle.publishBtn">Yayınla</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <script type="module" src="assets/js/pages/yazi-duzenle.js"></script>
+</body>
+</html>

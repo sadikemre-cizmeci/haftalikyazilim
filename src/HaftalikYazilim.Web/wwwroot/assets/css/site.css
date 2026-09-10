@@ -1,0 +1,1420 @@
+/* ==========================================================================
+   site.css — YERLEŞİM ve BİLEŞEN stilleri
+   ==========================================================================
+   Renk/ölçü/gölge/hareket değerleri buraya YAZILMAZ; hepsi theme.css'ten
+   var(--...) ile gelir. Temayı tek dosyadan değiştirebilmen için.
+
+   İçindekiler:
+     1.  Sıfırlama + temel tipografi + hareket tercihi (reduced-motion)
+     2.  Yerleşim iskeleti (.page, başlık, alt bilgi)
+     3.  Üst menü (navbar)          → assets/js/nav.js
+     4.  Butonlar
+     5.  Form alanları
+     6.  Yazı kartları + liste + rozetler + "yüzen" hover etkisi
+     7.  ⓘ Bilgi baloncuğu (popover) → assets/js/popover.js
+     8.  Boş durum / uyarı / durum metni
+     9.  Yüzen "+" butonu (FAB)
+     10. Bildirim (toast)
+     11. PDF görüntüleyici + okuma ilerleme çubuğu → pdf-viewer.js / oku.js
+     12. Basit tablo (yönetim)
+     13. Anasayfa (hero) + bölümler
+     14. Küçük yardımcı sınıflar
+     15. Duyarlı (responsive) düzeltmeler
+   ========================================================================== */
+
+/* 1. SIFIRLAMA + TEMEL --------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: var(--lh);
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  /* Sıcak kâğıt zeminde metin daha net otursun */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Başlıklar SERIF — editoryal / "okumaya değer" hissi */
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  line-height: var(--lh-tight);
+  margin: 0 0 var(--space-3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+h1 { font-size: var(--fs-2xl); }
+h2 { font-size: var(--fs-xl); }
+h3 { font-size: var(--fs-lg); }
+
+p { margin: 0 0 var(--space-4); }
+
+a {
+  color: var(--brand);
+  text-decoration: none;
+  transition: color var(--dur) var(--ease);
+}
+a:hover { color: var(--brand-dark); }
+
+img { max-width: 100%; display: block; }
+
+/* Klavye ile gezenler için sıcak, belirgin ama sert olmayan odak halkası */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/*
+  hidden özniteliği HER ZAMAN gizlesin (bkz. önceki not — .btn{display:flex} gibi
+  kurallar bunu ezebiliyor). JS'te el.hidden = true/false ile aç/kapa yapıyoruz.
+*/
+[hidden] { display: none !important; }
+
+/*
+  HAREKET TERCİHİ:
+  Kullanıcı işletim sisteminde "hareketi azalt" dediyse tüm animasyon/geçişleri
+  neredeyse kapat. Renk/opaklık geri bildirimi kalır, kayma/büyüme gider.
+*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 2. YERLEŞİM İSKELETİ ------------------------------------------------- */
+.page {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-4) var(--space-8);
+}
+.page--wide {
+  max-width: none;
+  padding: 0;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+.site-footer__inner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* Dil seçimi (TR / EN) — alt bilginin sağında küçük iki düğme */
+.lang-switch {
+  display: inline-flex;
+  gap: 4px;
+}
+.lang-switch button {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-soft);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 3px 9px;
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.lang-switch button:hover {
+  border-color: var(--text-faint);
+  color: var(--text);
+}
+.lang-switch button[aria-pressed="true"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+  cursor: default;
+}
+
+/* 3. ÜST MENÜ (navbar) ---------------------------------------------- */
+.nav__inner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  height: var(--header-height);
+  padding: 0 var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.nav__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  min-width: 0;
+}
+.nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  white-space: nowrap;
+}
+.nav__brand:hover { color: var(--text); }
+/* Fırça darbesi logosu (assets/img/logo.svg). Boyutu değiştirmek istersen burası. */
+.nav__logo {
+  display: block;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.nav__link {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-soft);
+  font-weight: 500;
+  transition: color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.nav__link:hover {
+  color: var(--text);
+  background: var(--bg-soft);
+}
+.nav__link.is-active {
+  color: var(--brand);
+  background: var(--brand-weak);
+}
+
+.nav__usermenu { position: relative; }
+.nav__user {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  max-width: 220px;
+  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.nav__user:hover {
+  background: var(--bg-soft);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.nav__usericon { display: inline-flex; color: var(--text-soft); }
+.nav__userlabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  min-width: 180px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--e3);
+  padding: var(--space-1);
+  display: flex;
+  flex-direction: column;
+  animation: pop-in var(--dur) var(--ease);
+}
+.nav__menuitem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+.nav__menuitem:hover { background: var(--bg-soft); color: var(--text); }
+.nav__menuitem.is-active { color: var(--brand); }
+.nav__menuitem--danger { color: var(--danger); }
+
+/* 4. BUTONLAR ----------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  min-height: 42px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              transform var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease);
+}
+.btn:hover {
+  background: var(--bg-soft);
+  border-color: var(--text-faint);
+  color: var(--text);
+}
+/* Basınca hafifçe "içeri" — dokunsal geri bildirim */
+.btn:active { transform: scale(0.98); }
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn--primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+  box-shadow: 0 1px 2px rgba(31, 111, 92, 0.25);
+}
+.btn--primary:hover {
+  background: var(--brand-dark);
+  border-color: var(--brand-dark);
+  color: var(--on-brand);
+}
+
+.btn--danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+.btn--danger:hover {
+  background: var(--danger-dark);
+  border-color: var(--danger-dark);
+  color: #fff;
+}
+
+.btn--ghost {
+  border-color: transparent;
+  background: transparent;
+}
+.btn--ghost:hover { background: var(--bg-soft); }
+
+.btn--sm {
+  min-height: 34px;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-sm);
+}
+
+/* Tam genişlik buton (form altındaki "Taslak olarak kaydet" / "Yayınla") */
+.btn--block { display: flex; width: 100%; }
+
+/* Kaydedildi/onay hâli — açık yeşil */
+.btn--ok {
+  background: var(--brand-weak);
+  border-color: var(--success);
+  color: var(--brand-dark);
+}
+
+/* Geri bağlantısı — "← Yazılarım" (hap görünümlü, sade ama belirgin) */
+.backlink {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease),
+              background-color var(--dur) var(--ease);
+}
+.backlink:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--bg-soft);
+  text-decoration: none;
+}
+
+/* ---- Yazı formu: PDF alanı ---- */
+/* "PDF seç" düğmesi (henüz dosya yokken) */
+.pdf-pick {
+  width: 100%;
+  border-style: dashed;
+  color: var(--text-soft);
+  gap: var(--space-2);
+}
+.pdf-pick:hover { color: var(--text); border-color: var(--border-strong); background: var(--bg-soft); }
+.btn__ico { display: inline-flex; align-items: center; }
+
+/* Seçilen / mevcut PDF'i gösteren kart */
+.pdf-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.pdf-card__icon { color: var(--danger); flex-shrink: 0; display: inline-flex; }
+.pdf-card__meta { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.pdf-card__name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pdf-card__size { font-size: var(--fs-sm); color: var(--text-faint); }
+.pdf-card__actions { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
+
+/* Yükleme ilerlemesi */
+.upload-progress { display: flex; flex-direction: column; gap: var(--space-1); }
+.upload-progress__track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+.upload-progress__track > span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--brand);
+  transition: width 120ms linear;
+}
+.upload-progress__label { font-size: var(--fs-sm); color: var(--text-soft); }
+/* Dosyasız kayıt: yüzde yok → "çalışıyor" kayan animasyonu */
+.upload-progress--indet .upload-progress__track > span {
+  width: 40%;
+  transition: none;
+  animation: indet 1s ease-in-out infinite;
+}
+@keyframes indet {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .upload-progress--indet .upload-progress__track > span { animation: none; width: 100%; }
+}
+
+/* Yayınlandı paneli (düğme satırının yerine geçer) */
+.publish-done {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--brand-weak);
+}
+.publish-done__msg { font-weight: 700; color: var(--brand-dark); }
+
+/* Alan altı UYARI metni (kutu değil) */
+.field__hint--warn { color: var(--danger); }
+/* Form geneli hata (ağ/sunucu) — sade metin */
+.form-error {
+  color: var(--danger);
+  font-size: var(--fs-sm);
+  margin: 0;
+}
+
+/* Sadece ikon taşıyan buton (çöp kutusu, ⓘ, PDF araç çubuğu) */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-soft);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color var(--dur) var(--ease),
+              color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease);
+}
+.icon-btn:hover {
+  background: var(--bg-soft);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.icon-btn--danger:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+.icon-btn--info:hover {
+  background: var(--accent-2-weak);
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+}
+
+/* 5. FORM ALANLARI --------------------------------------------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.field__label { font-weight: 600; font-size: var(--fs-sm); }
+.field__hint { font-size: var(--fs-sm); color: var(--text-faint); }
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-inset);
+  color: var(--text);
+  font: inherit;
+  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--brand);
+  background: var(--surface);
+  outline: none;
+}
+.textarea { min-height: 130px; resize: vertical; line-height: var(--lh); }
+.input[type="file"] { padding: var(--space-2); background: var(--surface); }
+
+/* Salt okunur alan (ör. profil e-postası): kutu değil, etiketin altında sade
+   metin gibi görünsün — düzenlenemeyeceği ilk bakışta belli olsun. */
+.input[readonly] {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-soft);
+  padding-left: 0;
+  padding-right: 0;
+  cursor: default;
+}
+.input[readonly]:focus { border-color: transparent; background: transparent; }
+
+/* 6. YAZI KARTLARI + LİSTE + ROZETLER ------------------------- */
+.article-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+  KART: sakin dururken düz, hover'da hafifçe "yükselir" (yüzer gibi).
+  translateY(-4px) + gölge bir kademe artar + kenar ısınır + başlık yeşile döner.
+  Araştırma: küçük hover-lift + katmanlı gölge = temiz, davetkâr "derinlik".
+*/
+.article-card {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--e1);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease),
+              border-color var(--dur) var(--ease);
+}
+.article-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--e3);
+  border-color: var(--border-strong);
+}
+.article-card:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+/* Tıklanınca çok hafif geri otur */
+.article-card:active { transform: translateY(-1px); }
+
+.article-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.article-card__title {
+  margin: 0;
+  font-size: var(--fs-lg);
+  color: var(--text);
+  transition: color var(--dur) var(--ease);
+}
+/* Başlık bir <a> ama rengini/çizgisini karttan alsın (link mavisi/yeşili görünmesin) */
+.article-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+.article-card:hover .article-card__title { color: var(--brand); }
+
+.article-card__summary {
+  margin: 0;
+  color: var(--text-soft);
+  max-width: var(--measure);
+  /* Kart yüzünde en fazla 2 satır özet; gerisi ⓘ baloncuğunda (progressive disclosure) */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/*
+  Alt satır — YIĞILMA YOK:
+    SOL: [durum?] [avatar+ad] · [tarih]      SAĞ: [Yeni] [PDF indir]
+*/
+.article-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  font-size: var(--fs-sm);
+  color: var(--text-faint);
+  margin-top: var(--space-1);
+}
+.article-card__identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.article-card__foot-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+/* Tıklanabilir "avatar + ad" — profile götürür */
+.article-card__author {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-soft);
+  font-weight: 500;
+}
+.article-card__author:hover { color: var(--brand); text-decoration: none; }
+.article-card__dot { opacity: 0.5; }
+/* Sessiz "PDF indir" */
+.article-card__dl {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-faint);
+  font-weight: 600;
+}
+.article-card__dl:hover { color: var(--brand); text-decoration: none; }
+
+/* Sağ üst köşedeki tekil aksiyonlar (ⓘ / çöp kutusu) */
+.article-card__corner {
+  flex-shrink: 0;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.badge--draft {
+  background: color-mix(in srgb, var(--warning) 16%, transparent);
+  color: var(--warning);
+}
+.badge--published {
+  background: var(--brand-weak);
+  color: var(--brand);
+}
+/* "Yeni" — kiremit mikro-vurgu; son ~10 günde yayımlananlarda tazelik hissi */
+.badge--new {
+  background: var(--accent-2-weak);
+  color: var(--accent-2);
+}
+
+/*
+  GİRİŞ ANİMASYONU: kartlar sayfaya "belirir" gibi gelir (fade + hafif yukarı).
+  assets/js/motion.js kartı görünce .is-in ekler; stagger (kademe) inline style ile.
+  reduced-motion'da bu blok zaten etkisiz (yukarıdaki global kural sıfırlıyor).
+*/
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* 7. ⓘ BİLGİ BALONCUĞU (popover) ----------------------------- */
+.popover {
+  position: fixed;               /* JS konumlandırır */
+  z-index: 80;
+  max-width: 320px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--e3);
+  padding: var(--space-4);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  animation: pop-in var(--dur) var(--ease);
+}
+.popover__title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-base);
+  margin: 0 0 var(--space-2);
+}
+.popover__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  color: var(--text-soft);
+  padding: 2px 0;
+}
+.popover__row span:last-child { color: var(--text); font-variant-numeric: tabular-nums; }
+.popover__sep { height: 1px; background: var(--border); margin: var(--space-2) 0; }
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* 8. BOŞ DURUM / UYARI / DURUM ------------------------------- */
+.state {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--text-soft);
+}
+.state__title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-lg);
+  color: var(--text);
+  margin-bottom: var(--space-2);
+}
+/* Davetkâr boş durum (ör. "ilk yazını bırak") */
+.invite {
+  background: linear-gradient(180deg, var(--brand-weak), transparent);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  padding: var(--space-7) var(--space-5);
+  text-align: center;
+}
+.invite__title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-xl);
+  color: var(--text);
+  margin-bottom: var(--space-2);
+}
+
+/*
+  Uyarı / hata kutusu — sade, gövde fontuyla, soldan renkli çizgi.
+  Büyük dolu kırmızı blok değil; sayfanın geri kalanıyla "çarpışmaz".
+*/
+.alert {
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  background: var(--bg-soft);
+  color: var(--text);
+  margin-bottom: var(--space-4);
+}
+.alert--error {
+  border-left-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 6%, var(--bg-soft));
+}
+.alert--info {
+  border-left-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 6%, var(--bg-soft));
+}
+
+/* 9. YÜZEN "+" BUTONU (FAB) --------------------------------- */
+.fab {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: 58px;
+  height: 58px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--brand);
+  color: var(--on-brand);
+  box-shadow: var(--e3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 40;
+  transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.fab:hover {
+  background: var(--brand-dark);
+  color: var(--on-brand);
+  transform: translateY(-2px) scale(1.04);
+}
+.fab:active { transform: scale(0.96); }
+
+/* 10. BİLDİRİM (toast) ------------------------------------- */
+#toast-host {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-6);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: 100;
+  pointer-events: none;
+}
+.toast {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: var(--e3);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
+  font-size: var(--fs-sm);
+}
+.toast--in { opacity: 1; transform: translateY(0); }
+.toast--error { background: var(--danger); color: #fff; }
+.toast--success { background: var(--brand); color: var(--on-brand); }
+
+/* 11. PDF GÖRÜNTÜLEYİCİ + OKUMA İLERLEMESİ ---------------- */
+.pdfv {
+  display: flex;
+  flex-direction: column;
+  /* Sabit yükseklik YOK: görüntüleyici içeriği kadar uzar. Böylece sayfada
+     TEK dikey kaydırma olur (belgenin kendi kaydırması) ve altındaki yorumlar
+     doğal olarak PDF'in ardından gelir. min-height sadece kısa PDF'lerde
+     okuma alanının "dolu" görünmesi için. */
+  min-height: calc(100dvh - var(--header-height));
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
+}
+.pdfv__toolbar {
+  /* Araç çubuğu, sayfa kayarken üstte sabit kalır (menü + okuma çubuğunun
+     hemen altında). z-index: header 50 > okuma çubuğu 30 > bu 20. */
+  position: sticky;
+  top: calc(var(--header-height) + 3px);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.pdfv__toolbar-group { display: flex; align-items: center; gap: var(--space-1); }
+.pdfv__spacer { flex: 1; }
+
+/* Sayfa gezinme / yakınlaştırma — tek bir yuvarlak "hap" (pill) */
+.pdfv__pager {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.pdfv__pagerbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: none;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.pdfv__pagerbtn:hover:not(:disabled) { background: var(--bg-soft); color: var(--text); }
+.pdfv__pagerbtn:disabled { opacity: 0.35; cursor: default; }
+.pdfv__pagelabel {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  padding: 0 var(--space-1);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+.pdfv__pageinput {
+  width: 2.2ch;
+  min-width: 2.2ch;
+  padding: 2px 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.pdfv__pageinput:focus {
+  outline: none;
+  border-bottom-color: var(--brand);
+}
+.pdfv__pageslash { color: var(--text-faint); }
+.pdfv__pager--zoom .pdfv__pagerbtn { width: 34px; }
+
+.pdfv__stage {
+  /* flex-shrink: 0 → sahne asla içeriğinden kısa olmaz; yani dikey taşma
+     (ve ikinci bir dikey kaydırma çubuğu) oluşmaz. Çok yakınlaştırıldığında
+     yalnızca YATAY kaydırma bu kutuda kalır; dikeyde sayfanın kendisi kayar. */
+  flex: 1 0 auto;
+  overflow-x: auto;
+  padding: var(--space-5) var(--space-4);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+.pdfv__canvas {
+  background: #fff;
+  box-shadow: var(--e2);
+  border-radius: 2px;
+  max-width: 100%;
+  height: auto;
+}
+.pdfv__loading { align-self: center; margin: auto; color: var(--text-soft); }
+
+/* Okuma ilerleme çubuğu (oku.html — sayfanın en üstünde ince şerit) */
+.readbar {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 30;
+  height: 3px;
+  background: transparent;
+}
+.readbar > span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--brand);
+  transition: width var(--dur-slow) var(--ease);
+}
+
+/* 12. BASİT TABLO (yönetim) ------------------------------ */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+  min-width: 560px;
+}
+.table th,
+.table td {
+  padding: var(--space-3);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.table th { background: var(--bg-soft); font-weight: 700; }
+.table tr:last-child td { border-bottom: none; }
+.table tbody tr { transition: background-color var(--dur) var(--ease); }
+.table tbody tr:hover { background: var(--bg-soft); }
+
+/* 13. ANASAYFA (hero) + BÖLÜMLER ------------------------ */
+.hero {
+  padding: var(--space-7) 0 var(--space-6);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-6);
+}
+.hero h1 {
+  font-size: var(--fs-3xl);
+  margin-bottom: var(--space-4);
+}
+.hero__lead {
+  font-size: var(--fs-lg);
+  color: var(--text-soft);
+  max-width: var(--measure);
+  line-height: var(--lh);
+}
+
+.section {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-6);
+}
+.section + .section { margin-top: var(--space-5); }
+.section p { max-width: var(--measure); }
+
+/* Sayfa üstü sakinleştirici giriş cümlesi (Yazılar sayfası) */
+.calm-intro {
+  font-family: var(--font-serif);
+  font-size: var(--fs-lg);
+  color: var(--text-soft);
+  max-width: var(--measure);
+  margin: 0 0 var(--space-2);
+}
+
+.contact-line { display: flex; gap: var(--space-2); align-items: center; }
+
+/* 14. YARDIMCI SINIFLAR -------------------------------- */
+.stack { display: flex; flex-direction: column; gap: var(--space-4); }
+.row { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }
+.row--between { justify-content: space-between; }
+.muted { color: var(--text-soft); }
+.text-sm { font-size: var(--fs-sm); }
+.measure { max-width: var(--measure); }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.hidden { display: none !important; }
+
+/* 15. DUYARLI (responsive) ----------------------------- */
+@media (max-width: 640px) {
+  /* Dar ekranda yazı gizlenir, logo tek başına kalır → biraz büyüsün. */
+  .nav__brandtext { display: none; }
+  .nav__logo { width: 30px; height: 30px; }
+  .nav__inner { padding: 0 var(--space-3); gap: var(--space-2); }
+  .nav__left { gap: var(--space-3); }
+  .nav__userlabel { display: none; }
+  .page { padding: var(--space-5) var(--space-3) var(--space-7); }
+  .hero h1 { font-size: var(--fs-2xl); }
+  .article-card { padding: var(--space-4); }
+  /* Dokunmatikte hover-lift yerine hafif bir vurgu yeter */
+  .article-card:hover { transform: none; box-shadow: var(--e2); }
+  .profile-head { flex-direction: column; text-align: center; align-items: center; }
+  .avatar-editor { flex-direction: column; align-items: flex-start; }
+}
+
+/* ==========================================================================
+   16. PROFİL / AVATAR / SAYFALAMA  (sonradan eklendi)
+   ========================================================================== */
+
+/* ---- Avatar dairesi (assets/js/avatar.js) ---- */
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+  overflow: hidden;
+  color: #fff;
+  font-weight: 700;
+  line-height: 1;
+  user-select: none;
+}
+/* Fotoğraf: daireyi doldur, çarpıtma yok; kullanıcının odak/zoom ayarı img'e uygulanır. */
+.avatar--img > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;   /* JS bunu üzerine yazar */
+  display: block;
+}
+.avatar--initials { letter-spacing: 0.02em; }
+.avatar--lg { width: 96px; height: 96px; font-size: 34px; }
+
+/* ---- Navbar kullanıcı düğmesindeki avatar ---- */
+.nav__user .avatar { width: 24px; height: 24px; font-size: 10px; }
+
+/* ---- Herkese açık profil sayfası ---- */
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+#profile-about p { max-width: var(--measure); }
+
+/* ---- Profil düzenleme: avatar + kaydırıcılar ---- */
+.avatar-editor {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+.avatar-adjust {
+  margin-top: var(--space-3);
+  display: grid;
+  gap: var(--space-2);
+  max-width: 360px;
+}
+.avatar-adjust label {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--text-soft);
+}
+.avatar-adjust input[type="range"] { width: 100%; accent-color: var(--brand); }
+
+/* ---- ⓘ baloncuğundaki yazar bloğu ---- */
+.popover__author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text);
+  padding: var(--space-1) 0;
+}
+.popover__author:hover { text-decoration: none; }
+.popover__author:hover .popover__author-name { color: var(--brand); }
+.popover__author-name { font-weight: 700; }
+.popover__author-bio { color: var(--text-soft); font-size: var(--fs-sm); }
+
+/* ---- Okuma sayfası künyesi ---- */
+.read-byline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+.read-byline__author {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-soft);
+  font-weight: 500;
+}
+.read-byline__author:hover { color: var(--brand); text-decoration: none; }
+
+/* ---- "Şu yazarın yazıları" bilgisi (Yazılar sayfası) ---- */
+.author-note {
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  margin: 0;
+}
+
+/* ---- Sayfa numaraları (assets/js/pagination.js) ---- */
+.pager {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+  padding-top: var(--space-2);
+}
+.pager__btn {
+  min-width: 38px;
+  height: 38px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.pager__btn:hover:not(:disabled) { background: var(--bg-soft); border-color: var(--border-strong); }
+.pager__btn.is-active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+  cursor: default;
+}
+.pager__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pager__dots { display: inline-flex; align-items: center; padding: 0 var(--space-1); color: var(--text-faint); }
+
+/* ---- Tablo: tıklanabilir satır + aksiyon sütunu ---- */
+.table__row--link { cursor: pointer; }
+.table__actions { text-align: right; white-space: nowrap; }
+.table__actions .icon-btn { width: 30px; height: 30px; }
+
+/* ---- Şifremi unuttum: yeni şifre kutusu ---- */
+.new-password {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.new-password code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  letter-spacing: 0.04em;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  user-select: all;
+}
+
+/* ==========================================================================
+   17. SOSYAL: beğeni / kaydet / paylaş / yorum / takip  (sonradan eklendi)
+   ========================================================================== */
+
+/* ---- Anasayfa iletişim (tek satır) ---- */
+.contact-mini {
+  font-size: var(--fs-sm);
+  margin-top: var(--space-6);
+}
+
+/* ---- beğen / kaydet / paylaş düğme grubu ---- */
+.social-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+.social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-soft);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.social-btn:hover { background: var(--bg-soft); color: var(--text); text-decoration: none; }
+.social-btn--sm { padding: var(--space-1) var(--space-2); }
+.social-btn__icon { display: inline-flex; }
+.social-btn.is-liked { color: var(--danger); }
+.social-btn.is-starred { color: var(--warning); }
+
+/* Kartta sosyal satır — üstten ince ayraç */
+.article-card__social {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-2);
+  margin: var(--space-1) calc(-1 * var(--space-1)) calc(-1 * var(--space-2));
+}
+
+/* ---- Okuma sayfası: araç çubuğundaki yazar künyesi ---- */
+.pdfv__author {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--text-soft);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+.pdfv__author:hover { background: var(--bg-soft); color: var(--text); text-decoration: none; }
+.pdfv__toolbar .social-actions { margin-left: auto; }
+
+/* "Çık" düğmesi — araç çubuğunun en solunda, sade */
+.pdfv__exit { color: var(--text-soft); margin-right: var(--space-2); }
+.pdfv__exit:hover { color: var(--text); border-color: var(--border-strong); background: var(--bg-soft); }
+
+/* ---- Sayfa üstüne açılan PDF önizleme katmanı (pdf-overlay.js) ----
+   Yazı düzenleme formundaki "Görüntüle" bunu kullanır: yeni sekme açmaz,
+   başka sayfaya gitmez. Tüm ekranı kaplar; "Çık" ya da Esc kapatır. */
+.pdf-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;                 /* menü (50) ve toast/dialog (100) üstünde */
+  background: var(--bg);
+  overflow-y: auto;             /* PDF içeriği uzun → katmanın kendi kaydırması */
+  overscroll-behavior: contain;
+}
+.pdf-overlay__viewer { min-height: 100%; }
+/* Katman header'ı kapladığı için görüntüleyici ölçülerini sıfırdan başlat. */
+.pdf-overlay .pdfv { min-height: 100dvh; border-bottom: 0; }
+.pdf-overlay .pdfv__toolbar { top: 0; }
+
+/* ---- Yorumlar ---- */
+.comments {
+  width: 100%;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) var(--space-8);
+  /* "#yorumlar" bağlantısıyla gelindiğinde başlık sabit menünün altında kalmasın. */
+  scroll-margin-top: calc(var(--header-height) + var(--space-4));
+}
+.comments__title { font-size: var(--fs-xl); }
+.comment-form { margin-bottom: var(--space-5); }
+.comment-form .row { justify-content: flex-end; margin-top: var(--space-2); }
+.comment-list { display: flex; flex-direction: column; gap: var(--space-4); }
+.comment {
+  display: flex;
+  gap: var(--space-3);
+}
+.comment__body { flex: 1; min-width: 0; }
+.comment__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: 2px;
+}
+.comment__author { font-weight: 700; color: var(--text); }
+.comment__author:hover { color: var(--brand); }
+.comment__text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.comment__delete {
+  border: 0;
+  background: none;
+  color: var(--text-faint);
+  font: inherit;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  padding: 0 var(--space-1);
+}
+.comment__delete:hover { color: var(--danger); }
+
+/* ---- Profil sayfası: sayılar + takip ---- */
+.profile-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  color: var(--text-faint);
+}
+.profile-stat strong { color: var(--text); }
+
+/* ---- Tümü / Takip ettiklerim segment düğmesi ---- */
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  width: fit-content;
+}
+.segmented button {
+  padding: var(--space-2) var(--space-4);
+  border: 0;
+  background: var(--surface);
+  color: var(--text-soft);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+.segmented button + button { border-left: 1px solid var(--border); }
+.segmented button:hover { background: var(--bg-soft); }
+.segmented button.is-active { background: var(--brand); color: var(--on-brand); }
+
+@media (max-width: 640px) {
+  .pdfv__author span:not(.badge) { display: none; }  /* dar ekranda sadece avatar */
+  .comments { padding-inline: var(--space-3); }
+}
+
+/* ---- Yönetim: istatistik tabloları (ilk 10) ---- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+.leaderboard { padding: var(--space-4); }
+.leaderboard__title {
+  font-size: var(--fs-base);
+  margin: 0 0 var(--space-3);
+}
+.leaderboard__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.leaderboard__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+}
+.leaderboard__rank {
+  width: 18px;
+  text-align: right;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.leaderboard__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+  font-weight: 600;
+}
+.leaderboard__name:hover { color: var(--brand); }
+.leaderboard__value {
+  color: var(--text-soft);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,39 @@
+[Unit]
+Description=HaftalikYazilim ASP.NET Core uygulaması
+After=network.target postgresql-16.service
+Wants=postgresql-16.service
+
+[Service]
+# Kendi kullanıcısıyla çalışır (root DEĞİL). server-setup.sh bu kullanıcıyı oluşturur.
+User=haftalik
+Group=haftalik
+
+WorkingDirectory=/var/www/haftalikyazilim
+# Self-contained yayın: sistemde .NET runtime aranmaz, kendi host'unu çalıştırır.
+ExecStart=/var/www/haftalikyazilim/HaftalikYazilim.Web
+
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=haftalikyazilim
+
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5000
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+# Sırlar ve ortam ayarları burada (chmod 600). server-setup.sh yazar.
+EnvironmentFile=/etc/haftalikyazilim.env
+
+# Yüklenen dosyalar / oturum anahtarları / kart önbelleği publish klasörünün
+# DIŞINDA, kalıcı yerde. Böylece redeploy (dosyaların üzerine yazma) bunları silmez.
+Environment=Storage__Root=/var/lib/haftalikyazilim/uploads
+Environment=Storage__AvatarRoot=/var/lib/haftalikyazilim/avatars
+Environment=DataProtection__KeyDir=/var/lib/haftalikyazilim/keys
+Environment=Og__CacheDir=/var/lib/haftalikyazilim/og-cache
+Environment=Og__FontPath=/var/lib/haftalikyazilim/fonts/card.ttf
+
+# Basit sertleştirme (ilk kurulumu bozmayacak kadar)
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

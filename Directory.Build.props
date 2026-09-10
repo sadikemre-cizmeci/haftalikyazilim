@@ -1,0 +1,40 @@
+<Project>
+
+  <!--
+    ============================================================================
+    Directory.Build.props  (çözüm kökü)
+    ============================================================================
+    Bu dosya, bu klasör ve altındaki TÜM .csproj projelerine otomatik uygulanır.
+
+    NEDEN VAR?
+    Bu makinede .NET 10 "workload set" kaydı bozuk (10.0.301.1 sürümünün
+    manifest dosyaları eksik). Bu yüzden düz bir ASP.NET Core projesini bile
+    derlemeye çalışınca MSBuild "workload resolver" hatası veriyordu.
+
+    Aşağıdaki satır, workload çözümleyicisini kapatır. Bu projenin hiçbir
+    workload'a ihtiyacı yok (MAUI / Android / wasm-tools vb. kullanmıyoruz),
+    dolayısıyla kapatmak tamamen güvenli ve derleme normal çalışıyor.
+
+    KALICI ÇÖZÜM (isteğe bağlı, yönetici şifresi ister):
+        sudo dotnet workload repair
+      veya
+        sudo dotnet workload update
+    Bunu yaptıktan sonra istersen bu dosyayı silebilirsin; proje yine derlenir.
+  -->
+  <PropertyGroup>
+    <MSBuildEnableWorkloadResolver>false</MSBuildEnableWorkloadResolver>
+  </PropertyGroup>
+
+  <!--
+    Tüm projeler için ortak ayarlar. Yeni proje eklersen (örn. test projesi,
+    ileride ayrı bir "Worker" servisi) bunlar otomatik geçerli olur.
+  -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+
+</Project>

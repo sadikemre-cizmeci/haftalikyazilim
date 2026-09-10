@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HaftalikYazilim.Web/HaftalikYazilim.Web.csproj" />
+  </Folder>
+</Solution>

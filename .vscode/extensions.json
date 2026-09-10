@@ -1,0 +1,8 @@
+{
+  "//": "VS Code bu projeyi açınca önereceği eklentiler.",
+  "recommendations": [
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.csharp",
+    "humao.rest-client"
+  ]
+}

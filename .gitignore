@@ -1,0 +1,57 @@
+# ==== .NET / build çıktıları ====
+bin/
+obj/
+out/
+*.user
+*.suo
+.vs/
+
+# deploy.sh'in ürettiği self-contained yayın klasörü (~120+ MB). Repoya ASLA girmez.
+publish/
+src/HaftalikYazilim.Web/publish/
+
+# .NET test / kapsam çıktıları
+[Tt]est[Rr]esults/
+[Cc]overage*/
+*.trx
+
+# ==== Rider / VS Code (kişisel ayarlar) ====
+.idea/
+*.DotSettings.user
+# .vscode/ klasörünü BİLEREK dışlamıyoruz: launch.json / tasks.json paylaşılsın.
+.vscode/*.log
+.vscode/settings.json
+
+# ==== Claude Code (kişiye özel) ====
+.claude/settings.local.json
+
+# ==== Yerel gizli ayarlar ====
+# Gerçek şifre/bağlantı dizesi için "dotnet user-secrets" ya da sunucudaki
+# /etc/haftalikyazilim.env kullan. Aşağıdakiler repoya girmez:
+appsettings.*.local.json
+appsettings.Production.json
+appsettings.Local.json
+*.env
+.env*
+secrets.json
+
+# ==== Uygulama verisi (App_Data) ====
+# SQLite veritabanı dosyaları ve yüklenen PDF'ler repoya girmez.
+src/HaftalikYazilim.Web/App_Data/*
+!src/HaftalikYazilim.Web/App_Data/.gitkeep
+*.db
+*.db-shm
+*.db-wal
+
+# ==== İşletim sistemi ====
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+
+# ==== Diğer ====
+node_modules/
+*.log
+*.bak
+*.tmp
