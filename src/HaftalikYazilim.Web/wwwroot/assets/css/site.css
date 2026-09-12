@@ -610,17 +610,6 @@ img { max-width: 100%; display: block; }
 }
 .article-card:hover .article-card__title { color: var(--brand); }
 
-.article-card__summary {
-  margin: 0;
-  color: var(--text-soft);
-  max-width: var(--measure);
-  /* Kart yüzünde en fazla 2 satır özet; gerisi ⓘ baloncuğunda (progressive disclosure) */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
 /*
   Alt satır — YIĞILMA YOK:
     SOL: [durum?] [avatar+ad] · [tarih]      SAĞ: [Yeni] [PDF indir]
@@ -719,6 +708,10 @@ img { max-width: 100%; display: block; }
   position: fixed;               /* JS konumlandırır */
   z-index: 80;
   max-width: 320px;
+  /* İçerik (uzun özet + madde listesi) o taraftaki boşluğa sığmayabilir; JS
+     max-height'i buna göre ayarlar, taşan kısım ekran dışına kesilmek yerine
+     baloncuğun İÇİNDE kayar. */
+  overflow-y: auto;
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
@@ -743,6 +736,16 @@ img { max-width: 100%; display: block; }
 }
 .popover__row span:last-child { color: var(--text); font-variant-numeric: tabular-nums; }
 .popover__sep { height: 1px; background: var(--border); margin: var(--space-2) 0; }
+
+/* ⓘ baloncuğundaki TAM biçimlendirilmiş özet (bkz. format-text.js) */
+.popover__summary .fmt-p { margin: 0 0 var(--space-2); }
+.popover__summary .fmt-list {
+  margin: 0 0 var(--space-2);
+  padding-left: 1.2em;
+}
+.popover__summary .fmt-list li { margin: 2px 0; }
+.popover__summary .fmt-p:last-child,
+.popover__summary .fmt-list:last-child { margin-bottom: 0; }
 
 @keyframes pop-in {
   from { opacity: 0; transform: translateY(4px) scale(0.98); }

@@ -117,9 +117,6 @@ public class OgCardRenderer
             canvas.DrawRect(new SKRect(24, 24, Width - 24, Height - 24), borderPaint);
         }
 
-        // Sol üstte kırmızı fırça halkası (favicon ile aynı fikir)
-        DrawBrandRing(canvas, cx: 108, cy: 108, radius: 46, strokeWidth: 20);
-
         const float marginX = 80f;
         var contentWidth = Width - marginX * 2;
 
@@ -150,23 +147,24 @@ public class OgCardRenderer
                 Color = Muted,
                 IsAntialias = true,
                 Typeface = typeface,
-                TextSize = 36,
+                TextSize = 40,
             };
             canvas.DrawText($"yazan {authorName}", marginX, y + 16f, authorPaint);
         }
 
-        // Alt: küçük halka + "HaftalıkYazılım"
-        DrawBrandRing(canvas, cx: marginX + 14, cy: Height - 74, radius: 15, strokeWidth: 7);
+        // Alt: halka + "HaftalıkYazılım" (link kartında görünen tek marka işareti;
+        // üstteki büyük halka kaldırıldı — kart artık daha sade).
+        DrawBrandRing(canvas, cx: marginX + 18, cy: Height - 76, radius: 19, strokeWidth: 9);
         using (var brandPaint = new SKPaint
         {
             Color = Muted,
             IsAntialias = true,
             Typeface = typeface,
-            TextSize = 34,
+            TextSize = 42,
             FakeBoldText = true,
         })
         {
-            canvas.DrawText("HaftalıkYazılım", marginX + 44, Height - 62, brandPaint);
+            canvas.DrawText("HaftalıkYazılım", marginX + 52, Height - 60, brandPaint);
         }
 
         using var image = surface.Snapshot();

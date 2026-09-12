@@ -71,9 +71,12 @@ export class PdfViewer {
     // makul boyutta ve ortada başlar (kullanıcı isterse + ile büyütür).
     this.fitMaxScale = 1.15;
 
-    // Render sırasında yeni istek gelirse çakışmayı önlemek için basit kuyruk.
+    // Yükleniyor göstergesi (yalnızca ilk render için; bkz. _syncToolbar).
     this.rendering = false;
-    this.pendingPage = null;
+    // Sürmekte olan pdf.js render görevi — aynı <canvas>'a çakışan ikinci bir
+    // render() çağrısı gelirse (hızlı zoom/sayfa tıklamaları) önce bunu iptal
+    // ederiz; pdf.js aynı canvas'ta üst üste render'a izin vermiyor.
+    this._renderTask = null;
 
     // Ekran çözünürlüğü çarpanı (retina vb.). Net görüntü için.
     this.outputScale = window.devicePixelRatio || 1;
@@ -132,6 +135,7 @@ export class PdfViewer {
   destroy() {
     document.removeEventListener("keydown", this._onKeyDown);
     this._resizeObserver.disconnect();
+    this._renderTask?.cancel();
     this.pdf?.destroy();
     this.pdf = null;
   }
@@ -144,7 +148,8 @@ export class PdfViewer {
     const target = Math.min(Math.max(1, Math.floor(num) || 1), this.pageCount);
     if (target === this.pageNum) return;
     this.pageNum = target;
-    this._queueRender(target);
+    this._scrollToPageTop();
+    this._renderPage(target);
   }
 
   prev() {
@@ -153,6 +158,43 @@ export class PdfViewer {
 
   next() {
     this.goToPage(this.pageNum + 1);
+  }
+
+  /**
+   * Sayfa değişince görünüm HER ZAMAN yeni sayfanın EN ÜSTÜNDEN başlasın —
+   * önceki sayfada nerede kalındığından (aşağıda okunuyor olsa bile) bağımsız.
+   * Sahnenin üstünü, yapışkan araç çubuğunun HEMEN ALTINA getirecek kadar
+   * kaydırırız — kaydıran kapsayıcı pencere olsun (normal okuma sayfası) ya da
+   * üstteki önizleme katmanı olsun (bkz. pdf-overlay.js, `overflow-y: auto`),
+   * ikisinde de çalışsın diye gerçek kaydıran atayı kendimiz buluruz.
+   */
+  _scrollToPageTop() {
+    if (!this._stageEl || !this._toolbarEl) return;
+
+    const bar = this._toolbarEl.getBoundingClientRect();
+    const stage = this._stageEl.getBoundingClientRect();
+    const delta = stage.top - (bar.bottom + 8); // + aşağı kaydır, - yukarı kaydır
+    if (Math.abs(delta) < 1) return;
+
+    const scroller = this._findScrollAncestor(this._stageEl);
+    if (scroller === document.scrollingElement) {
+      window.scroll({ top: window.scrollY + delta, left: window.scrollX, behavior: "instant" });
+    } else {
+      scroller.scrollTop += delta;
+    }
+  }
+
+  /** _stageEl'in üstünde GERÇEKTEN dikey taşan en yakın atayı bulur; yoksa pencere. */
+  _findScrollAncestor(el) {
+    let node = el.parentElement;
+    while (node && node !== document.body) {
+      if (/(auto|scroll|overlay)/.test(getComputedStyle(node).overflowY) &&
+          node.scrollHeight > node.clientHeight + 1) {
+        return node;
+      }
+      node = node.parentElement;
+    }
+    return document.scrollingElement || document.documentElement;
   }
 
   // ------------------------------------------------------------------
@@ -219,25 +261,30 @@ export class PdfViewer {
   // Render
   // ------------------------------------------------------------------
 
-  _queueRender(num) {
-    if (this.rendering) {
-      this.pendingPage = num;
-    } else {
-      this._renderPage(num);
-    }
-  }
-
   _renderCurrent() {
     return this._renderPage(this.pageNum);
   }
 
+  /**
+   * Sayfayı çizer. Hızlı üst üste zoom/sayfa tıklamalarında ÇAKIŞMAYI önlemek
+   * için: aynı <canvas>'ta hâlâ süren bir render varsa önce onu iptal eder,
+   * sonra yenisini başlatır (pdf.js aynı canvas'ta eşzamanlı render() çağrısına
+   * izin vermez — izin verilirse görüntü bozulur, ör. ters/küçük çizim).
+   */
   async _renderPage(num) {
     if (!this.pdf) return;
+
+    this._renderTask?.cancel();
+    this._renderTask = null;
+
     this.rendering = true;
     this._syncToolbar();
 
     try {
       const page = await this.pdf.getPage(num);
+      // Bekleme sırasında başka bir sayfaya geçildiyse bu çizimi atla.
+      if (num !== this.pageNum) return;
+
       const viewport = page.getViewport({ scale: this.scale });
 
       const canvas = this._canvasEl;
@@ -254,24 +301,18 @@ export class PdfViewer {
           ? [this.outputScale, 0, 0, this.outputScale, 0, 0]
           : null;
 
-      await page.render({ canvasContext: ctx, viewport, transform }).promise;
+      const task = page.render({ canvasContext: ctx, viewport, transform });
+      this._renderTask = task;
+      await task.promise;
+      if (this._renderTask === task) this._renderTask = null;
     } catch (err) {
-      // RenderingCancelledException → yeni sayfaya geçilirken normal; sessiz geç.
+      // RenderingCancelledException → az önce biz iptal ettik; sessiz geç.
       if (err?.name !== "RenderingCancelledException") {
         console.error("Sayfa çizilemedi:", err);
       }
     } finally {
       this.rendering = false;
       this._syncToolbar();
-
-      // Bekleyen istek varsa şimdi işle.
-      if (this.pendingPage !== null && this.pendingPage !== num) {
-        const nextPage = this.pendingPage;
-        this.pendingPage = null;
-        this._renderPage(nextPage);
-      } else {
-        this.pendingPage = null;
-      }
     }
   }
 
@@ -333,6 +374,7 @@ export class PdfViewer {
       el("div", { class: "pdfv__spacer" }),
       ...rightItems,
     ].filter(Boolean));
+    this._toolbarEl = toolbar;   // _scrollToPageTop() konumunu buna göre hesaplar
 
     // Sahne (kaydırılabilir alan) + canvas
     this._canvasEl = el("canvas", { class: "pdfv__canvas" });

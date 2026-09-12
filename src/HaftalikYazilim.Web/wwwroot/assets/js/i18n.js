@@ -341,7 +341,7 @@ const DICT = {
     "yaziDuzenle.summaryLabel": "Özet",
     "yaziDuzenle.optional": "(isteğe bağlı)",
     "yaziDuzenle.summaryPh":
-      "Yazının 1-2 cümlelik özeti. ⓘ baloncuğunda görünür. Boş bırakabilirsin.",
+      "Yazının kısa özeti (ⓘ baloncuğunda görünür). Liste için '- ', kalın için **böyle**.",
     "yaziDuzenle.summaryHint": "En fazla 500 karakter.",
     "yaziDuzenle.pdfLabel": "PDF dosyası",
     "yaziDuzenle.pdfHintNew": "Zorunlu. Yalnızca PDF, en fazla 50 MB.",
@@ -678,7 +678,7 @@ const DICT = {
     "yaziDuzenle.summaryLabel": "Summary",
     "yaziDuzenle.optional": "(optional)",
     "yaziDuzenle.summaryPh":
-      "A 1–2 sentence summary of the article. Shown in the ⓘ popover. You can leave it empty.",
+      "Short summary (shown in the ⓘ popover). Use '- ' for a list, **like this** for bold.",
     "yaziDuzenle.summaryHint": "Up to 500 characters.",
     "yaziDuzenle.pdfLabel": "PDF file",
     "yaziDuzenle.pdfHintNew": "Required. PDF only, max 50 MB.",

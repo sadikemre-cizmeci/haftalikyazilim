@@ -1,8 +1,9 @@
 // ============================================================================
 // article-card.js — bir yazıyı "kart" olarak çizen ortak fonksiyon
 // ----------------------------------------------------------------------------
-// Kart yüzü SADE: başlık + (varsa) 2 satır özet + alt satırda kimlik/eylemler.
-// Ayrıntı (tam özet, yazar bio, boyut, sayaçlar) ⓘ baloncuğunda (progressive disclosure).
+// Kart yüzü SADE: başlık + alt satırda kimlik/eylemler. Özet ARTIK kartta
+// görünmez — tamamı (madde listesi/kalın dahil) ⓘ baloncuğunda (progressive
+// disclosure); bkz. buildInfoContent() ve format-text.js.
 //
 // Alt satır düzeni (çirkin yığılma çözümü):
 //   SOL:  [durum rozeti?] [avatar] [yazar adı] · [tarih]
@@ -14,6 +15,7 @@ import { ICONS } from "./icons.js";
 import { attachPopover } from "./popover.js";
 import { avatarEl } from "./avatar.js";
 import { socialActions } from "./social.js";
+import { formatText } from "./format-text.js";
 import { t } from "./i18n.js";
 
 /**
@@ -82,11 +84,6 @@ export function articleCard(item, opts = {}) {
     corner.length ? el("div", { class: "article-card__corner" }, corner) : null,
   ]);
 
-  // --- Özet (varsa; CSS 2 satıra kırpar) ---
-  const summary = item.summary
-    ? el("p", { class: "article-card__summary" }, [item.summary])
-    : null;
-
   // --- Alt satır ---
   const left = [];
   if (showStatus) {
@@ -128,7 +125,7 @@ export function articleCard(item, opts = {}) {
     : null;
 
   // --- Kart ---
-  const card = el("li", { class: "article-card" }, [head, summary, foot, social].filter(Boolean));
+  const card = el("li", { class: "article-card" }, [head, foot, social].filter(Boolean));
   card.addEventListener("click", (e) => {
     if (e.target.closest("a, button")) return;   // iç bağlantı/butona karışma
     window.location.href = linkHref;
@@ -154,9 +151,10 @@ function authorChip(author) {
 function buildInfoContent(item) {
   const author = item.author || {};
 
-  // 1) Özet (yoksa bilgi ver)
+  // 1) Özet — burada satır/madde/kalın biçimlendirmesi TAM uygulanır (kart
+  // yüzündeki kısa önizlemenin aksine; bkz. format-text.js). Yoksa bilgi ver.
   const summaryNode = item.summary
-    ? el("p", { class: "mb-0" }, [item.summary])
+    ? el("div", { class: "mb-0 popover__summary" }, formatText(item.summary))
     : el("p", { class: "mb-0 muted", style: "font-style:italic" }, [t("card.noSummary")]);
 
   // 2) Yazar bloğu — tıklanınca profile

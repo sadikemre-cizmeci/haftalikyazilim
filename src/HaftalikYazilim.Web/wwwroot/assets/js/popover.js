@@ -63,20 +63,31 @@ function scheduleHide() {
   hideTimer = setTimeout(hide, 120); // fareyi tetikleyici→baloncuk taşıyacak kadar kısa süre
 }
 
-/** Baloncuğu tetikleyiciye göre konumla (önce üst, olmazsa alt; yanları kırp). */
+/**
+ * Baloncuğu tetikleyiciye göre konumla: önce daha çok yer olan tarafa (üst ya
+ * da alt) yerleştirir; yanlardan taşarsa içeri çeker. İçerik o taraftaki
+ * boşluğa sığmayacak kadar uzunsa (ör. uzun özet + madde listesi), baloncuğu
+ * EKRAN DIŞINA TAŞIRIP KIRPMAK yerine kendi yüksekliğini o boşlukla sınırlar
+ * ve kendi içinde kaydırılabilir yapar (bkz. .popover { overflow-y: auto }).
+ */
 function position(el, trigger) {
-  // Ölçüm için görünür ama şeffaf bırak.
+  // Ölçüm için görünür ama şeffaf bırak; önceki açılıştan kalan sınırı sıfırla.
+  el.style.maxHeight = "none";
   el.style.left = "0px";
   el.style.top = "0px";
   const pad = 8;
   const rect = trigger.getBoundingClientRect();
   const pop = el.getBoundingClientRect();
 
-  // Dikey: üstte yer var mı?
-  let top = rect.top - pop.height - pad;
-  if (top < pad) {
-    top = rect.bottom + pad; // altına al
-  }
+  // Dikey: üstte mi altta mı daha çok yer var? Daha ferah olan tarafı seç.
+  const spaceAbove = rect.top - pad * 2;
+  const spaceBelow = window.innerHeight - rect.bottom - pad * 2;
+  const useAbove = spaceAbove >= spaceBelow;
+  const maxHeight = Math.max(120, Math.floor(useAbove ? spaceAbove : spaceBelow));
+
+  const top = useAbove
+    ? Math.max(pad, rect.top - Math.min(pop.height, maxHeight) - pad)
+    : rect.bottom + pad;
 
   // Yatay: tetikleyicinin ortasına hizala, sonra ekran içine çek.
   let left = rect.left + rect.width / 2 - pop.width / 2;
@@ -85,6 +96,7 @@ function position(el, trigger) {
 
   el.style.left = `${Math.round(left)}px`;
   el.style.top = `${Math.round(top)}px`;
+  el.style.maxHeight = `${maxHeight}px`;
 }
 
 /**
