@@ -379,26 +379,34 @@ public class ArticleService : IArticleService
             throw new AppNotFoundException("PDF dosyası bulunamadı.");
         }
 
-        // 1) Kartlarda gösterilen hızlı sayaç (+1, kaydı yüklemeden).
-        if (asDownload)
-        {
-            await _db.Articles.Where(a => a.Id == id)
-                .ExecuteUpdateAsync(s => s.SetProperty(a => a.DownloadCount, a => a.DownloadCount + 1), ct);
-        }
-        else
-        {
-            await _db.Articles.Where(a => a.Id == id)
-                .ExecuteUpdateAsync(s => s.SetProperty(a => a.ViewCount, a => a.ViewCount + 1), ct);
-        }
+        // Yazar kendi yazısını açıyor/indiriyorsa sayılmaz (görüntülenme/indirme
+        // sayaçları GERÇEK okuyucu ilgisini göstersin diye var; admin ise ve
+        // yazar değilse yine de sayılır — o gerçek bir dış görüntüleme).
+        var isOwner = _currentUser.UserId == article.AuthorId;
 
-        // 2) Zaman damgalı olay (yönetim istatistikleri "son X gün" için).
-        _db.ArticleEvents.Add(new ArticleEvent
+        if (!isOwner)
         {
-            ArticleId = id,
-            Kind = asDownload ? ArticleEventKind.Download : ArticleEventKind.View,
-            CreatedAtUtc = DateTime.UtcNow,
-        });
-        await _db.SaveChangesAsync(ct);
+            // 1) Kartlarda gösterilen hızlı sayaç (+1, kaydı yüklemeden).
+            if (asDownload)
+            {
+                await _db.Articles.Where(a => a.Id == id)
+                    .ExecuteUpdateAsync(s => s.SetProperty(a => a.DownloadCount, a => a.DownloadCount + 1), ct);
+            }
+            else
+            {
+                await _db.Articles.Where(a => a.Id == id)
+                    .ExecuteUpdateAsync(s => s.SetProperty(a => a.ViewCount, a => a.ViewCount + 1), ct);
+            }
+
+            // 2) Zaman damgalı olay (yönetim istatistikleri "son X gün" için).
+            _db.ArticleEvents.Add(new ArticleEvent
+            {
+                ArticleId = id,
+                Kind = asDownload ? ArticleEventKind.Download : ArticleEventKind.View,
+                CreatedAtUtc = DateTime.UtcNow,
+            });
+            await _db.SaveChangesAsync(ct);
+        }
 
         return new PdfPayload(stream, "application/pdf", article.OriginalFileName);
     }

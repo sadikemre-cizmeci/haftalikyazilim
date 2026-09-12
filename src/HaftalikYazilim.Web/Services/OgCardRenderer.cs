@@ -120,7 +120,16 @@ public class OgCardRenderer
         const float marginX = 80f;
         var contentWidth = Width - marginX * 2;
 
-        // Başlık — kalın, en fazla 3 satır
+        // Sağ altta SABİT bir şerit ayrılır: marka (halka + "HaftalıkYazılım") her
+        // zaman orada, aynı boyutta durur. Başlık + yazar bloğu bunun ÜSTÜNDEKİ
+        // alana dikeyde ortalanır — kısa başlıkta da uzun başlıkta da boşluk
+        // dengeli dağılır, altta tek bir kocaman boşluk kalmaz.
+        const float brandZoneHeight = 100f;
+        const float contentTop = 64f;
+        var contentBottom = Height - brandZoneHeight;
+
+        // --- Başlık — 1. öncelik: her zaman tam boyutunda, en fazla 3 satır
+        // (sığmazsa "…" ile kısalır; bkz. WrapText). ---
         using var titlePaint = new SKPaint
         {
             Color = Ink,
@@ -130,41 +139,105 @@ public class OgCardRenderer
             FakeBoldText = true,
         };
         var titleLines = WrapText(title, titlePaint, contentWidth, maxLines: 3);
+        var titleLineStep = titleSize * 1.24f;
+        var titleBlockHeight = titleLines.Count * titleLineStep;
 
-        var lineStep = titleSize * 1.24f;
-        float y = 250f;
-        foreach (var line in titleLines)
+        // --- Yazar adı — 2. öncelik: uzunsa alt satıra kırılır (en fazla 2 satır);
+        // başlık bloğuyla birlikte ayrılan alana sığmıyorsa önce küçültülür, o da
+        // yetmezse hiç çizilmez. ---
+        const float authorGap = 26f;
+        var authorLines = new List<string>();
+        var authorSize = 46f;
+        var authorBlockHeight = 0f;
+
+        if (!string.IsNullOrWhiteSpace(authorName))
         {
-            canvas.DrawText(line, marginX, y, titlePaint);
-            y += lineStep;
+            var authorText = $"Yazar : {authorName}";
+            for (var attempt = 0; attempt < 3; attempt++)
+            {
+                using var probePaint = new SKPaint { Typeface = typeface, TextSize = authorSize };
+                var lines = WrapText(authorText, probePaint, contentWidth, maxLines: 2);
+                var blockHeight = authorGap + lines.Count * (authorSize * 1.3f);
+
+                if (contentTop + titleBlockHeight + blockHeight <= contentBottom || attempt == 2)
+                {
+                    authorLines = lines;
+                    authorBlockHeight = blockHeight;
+                    break;
+                }
+                authorSize -= 6f; // sığmadı → küçült, tekrar dene
+            }
+
+            // Küçültme de yetmediyse (çok uzun başlık + çok uzun ad) yazarı hiç gösterme.
+            if (contentTop + titleBlockHeight + authorBlockHeight > contentBottom)
+            {
+                authorLines.Clear();
+                authorBlockHeight = 0f;
+            }
         }
 
-        // Yazar adı — silik
-        if (!string.IsNullOrWhiteSpace(authorName))
+        // --- Başlık + yazar bloğu ayrılan alana dikeyde ortalanır (kısa başlıkta
+        // da uzun başlıkta da altta tek, kocaman bir boşluk kalmasın). Her blok
+        // kendi "üst" konumundan kendi fontunun Ascent'iyle taban çizgisine
+        // çevrilir (fontlar farklı boyutta olduğu için tabanları zincirlemek
+        // yerine ayrı ayrı hesaplamak daha güvenli). ---
+        var band = contentBottom - contentTop;
+        var totalBlockHeight = titleBlockHeight + authorBlockHeight;
+        var titleTop = contentTop + Math.Max(0f, (band - totalBlockHeight) / 2f);
+
+        var titleBaseline = titleTop - titlePaint.FontMetrics.Ascent; // Ascent negatif → taban çizgisine çevir
+        foreach (var line in titleLines)
+        {
+            canvas.DrawText(line, marginX, titleBaseline, titlePaint);
+            titleBaseline += titleLineStep;
+        }
+
+        if (authorLines.Count > 0)
         {
             using var authorPaint = new SKPaint
             {
                 Color = Muted,
                 IsAntialias = true,
                 Typeface = typeface,
-                TextSize = 40,
+                TextSize = authorSize,
             };
-            canvas.DrawText($"yazan {authorName}", marginX, y + 16f, authorPaint);
+            var authorTop = titleTop + titleBlockHeight + authorGap;
+            var authorBaseline = authorTop - authorPaint.FontMetrics.Ascent;
+            var authorLineStep = authorSize * 1.3f;
+            foreach (var line in authorLines)
+            {
+                canvas.DrawText(line, marginX, authorBaseline, authorPaint);
+                authorBaseline += authorLineStep;
+            }
         }
 
-        // Alt: halka + "HaftalıkYazılım" (link kartında görünen tek marka işareti;
-        // üstteki büyük halka kaldırıldı — kart artık daha sade).
-        DrawBrandRing(canvas, cx: marginX + 18, cy: Height - 76, radius: 19, strokeWidth: 9);
+        // --- Sağ alt köşe: SABİT marka (halka + "HaftalıkYazılım") — 3. öncelik,
+        // ama zaten kendi ayrılmış şeridinde durduğu için başlık/yazar ne kadar
+        // uzun olursa olsun yeri/boyu değişmez. ---
+        const string brandText = "HaftalıkYazılım";
+        const float brandTextSize = 42f;
+        const float brandRingRadius = 19f;
+        const float brandGap = 14f;
+        const float rightMargin = 76f;
+        const float brandBaselineFromBottom = 58f;
+
         using (var brandPaint = new SKPaint
         {
             Color = Muted,
             IsAntialias = true,
             Typeface = typeface,
-            TextSize = 42,
+            TextSize = brandTextSize,
             FakeBoldText = true,
         })
         {
-            canvas.DrawText("HaftalıkYazılım", marginX + 52, Height - 60, brandPaint);
+            var brandBaseline = Height - brandBaselineFromBottom;
+            var textWidth = brandPaint.MeasureText(brandText);
+            var textX = Width - rightMargin - textWidth;
+            canvas.DrawText(brandText, textX, brandBaseline, brandPaint);
+
+            var ringCx = textX - brandGap - brandRingRadius;
+            var ringCy = brandBaseline - brandTextSize * 0.35f;
+            DrawBrandRing(canvas, cx: ringCx, cy: ringCy, radius: brandRingRadius, strokeWidth: 8);
         }
 
         using var image = surface.Snapshot();
